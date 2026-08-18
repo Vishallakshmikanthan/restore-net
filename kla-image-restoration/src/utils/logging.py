@@ -1,6 +1,17 @@
+"""Logging utilities for image restoration."""
+
 import os
+import sys
+from pathlib import Path
 import yaml
+
+# Remove local directory from sys.path to ensure standard library logging is loaded
+current_dir = str(Path(__file__).resolve().parent)
+if current_dir in sys.path:
+    sys.path.remove(current_dir)
+
 import logging
+
 
 def get_config(path: str) -> dict:
     """Loads a YAML configuration file and returns it as a dictionary.
@@ -16,6 +27,7 @@ def get_config(path: str) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         config = yaml.safe_load(f)
     return config if config is not None else {}
+
 
 def setup_logger(name: str = "RestoreNet", log_file: str = None, level: int = logging.INFO) -> logging.Logger:
     """Sets up a standard logger with stream and optional file output handlers.
