@@ -11,3 +11,4 @@ dry_run_test/
 dry_run_outputs/
 results/inference_outputs/
 *.npy
+*.tar.gz
