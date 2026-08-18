@@ -26,6 +26,7 @@
 - [Data Flow](#-data-flow)
 - [CNN Implementation Details](#-cnn-implementation-details)
 - [Web Interface](#-web-interface)
+- [Screenshots Gallery](#-screenshots-gallery)
 - [Performance Metrics](#-performance-metrics)
 - [Installation & Setup](#-installation--setup)
 - [Usage](#-usage)
@@ -607,6 +608,7 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 ```
 
 ![Metrics Dashboard](../screenshots/Screenshot%202026-08-18%20222710.png)
+*Real-time metrics display showing PSNR, SSIM, LPIPS, and latency measurements*
 
 #### 4. **System Trace** (Top)
 ```javascript
@@ -625,7 +627,8 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 └─────────┴──────────┴───────────┴───────────┴─────────┘
 ```
 
-![Pipeline Trace](../screenshots/Screenshot%202026-08-18%20222720.png)
+![Pipeline Trace Visualization](../screenshots/Screenshot%202026-08-18%20222720.png)
+*Pipeline execution profile showing stage-wise timing breakdown and total latency*
 
 ### UI/UX Design Principles
 
@@ -637,7 +640,33 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 
 ---
 
-## 📈 Performance Metrics
+## � Screenshots Gallery
+
+### Complete Application Workflow
+
+#### 1. Main Application Interface
+![Main Interface](../screenshots/Screenshot%202026-08-18%20222627.png)
+*Full view of RestoreNet application showing control panel, image processing area, and metrics*
+
+#### 2. Image Upload and Processing
+![Processing View](../screenshots/Screenshot%202026-08-18%20222636.png)
+*Three-panel display with input image, restored output, and residual thermal map*
+
+#### 3. Interactive Comparison Slider
+![Comparison Slider](../screenshots/Screenshot%202026-08-18%20222701.png)
+*Drag the slider to compare before/after restoration in real-time*
+
+#### 4. Metrics and Performance Dashboard
+![Metrics Dashboard](../screenshots/Screenshot%202026-08-18%20222710.png)
+*Real-time display of PSNR, SSIM, LPIPS metrics and inference latency*
+
+#### 5. Pipeline Execution Profile
+![Pipeline Visualization](../screenshots/Screenshot%202026-08-18%20222720.png)
+*Stage-wise timing breakdown showing processing bottlenecks and optimization opportunities*
+
+---
+
+## �📈 Performance Metrics
 
 ### Quantitative Results
 
