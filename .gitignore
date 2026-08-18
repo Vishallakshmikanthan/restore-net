@@ -1,0 +1,13 @@
+data/
+checkpoints/
+logs/
+__pycache__/
+*.pyc
+.env
+venv/
+.venv/
+*.egg-info/
+dry_run_test/
+dry_run_outputs/
+results/inference_outputs/
+*.npy
