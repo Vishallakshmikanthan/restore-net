@@ -1,4 +1,7 @@
-data/
+/data/
+/kla-image-restoration/data/
+!src/data/
+!**/src/data/**
 checkpoints/
 logs/
 __pycache__/

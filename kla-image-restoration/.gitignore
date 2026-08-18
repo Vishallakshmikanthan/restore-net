@@ -1,4 +1,6 @@
-data/
+/data/
+!src/data/
+!**/src/data/**
 checkpoints/
 logs/
 __pycache__/
@@ -11,3 +13,4 @@ dry_run_test/
 dry_run_outputs/
 results/inference_outputs/
 *.npy
+*.tar.gz
