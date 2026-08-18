@@ -36,11 +36,13 @@ class RestoreNet(nn.Module):
         scale_factor: int = 2,
         num_features: int = 64,
         num_blocks: int = 10,
+        use_attention: bool = True,
     ):
         super().__init__()
         self.scale_factor = scale_factor
         self.num_features = num_features
         self.num_blocks = num_blocks
+        self.use_attention = use_attention
 
         # 1. Spatial upsampling
         self.upsample = nn.Upsample(
@@ -60,7 +62,7 @@ class RestoreNet(nn.Module):
         self.attention_blocks = nn.ModuleList([
             ChannelAttention(channels=num_features, reduction=16)
             for _ in range(num_attn_blocks)
-        ])
+        ]) if use_attention else nn.ModuleList()
 
         # 4. Mid convolution and output reconstruction
         self.conv_mid = nn.Conv2d(num_features, num_features, kernel_size=3, padding=1, bias=True)
@@ -81,7 +83,7 @@ class RestoreNet(nn.Module):
         attn_idx = 0
         for i, block in enumerate(self.res_blocks):
             feat = block(feat)
-            if (i + 1) % 5 == 0 and attn_idx < len(self.attention_blocks):
+            if self.use_attention and (i + 1) % 5 == 0 and attn_idx < len(self.attention_blocks):
                 feat = self.attention_blocks[attn_idx](feat)
                 attn_idx += 1
 
