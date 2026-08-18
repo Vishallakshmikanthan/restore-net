@@ -6,7 +6,7 @@ import pprint
 import sys
 from pathlib import Path
 import torch
-from torch.utils.data import ConcatDataset
+from torch.utils.data import ConcatDataset, Subset
 import yaml
 
 # Ensure project root is in sys.path
@@ -58,34 +58,67 @@ def print_system_info(device_name: str):
 
 
 def main():
+    # 1. Parse arguments
     args = parse_args()
 
-    # 1. Load config
+    # 2. Load config
     config = load_config(args.config)
+
+    # 3. Override config with CLI arguments
+    if "training" not in config:
+        config["training"] = {}
+    if args.epochs is not None:
+        config["training"]["epochs"] = args.epochs
+    if args.batch_size is not None:
+        config["training"]["batch_size"] = args.batch_size
+
+    # 4. Set config device
+    if args.device is not None:
+        config["device"] = args.device
+    elif "device" not in config:
+        config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
+
+    device_str = config["device"]
+    if device_str == "cuda" and not torch.cuda.is_available():
+        print("CUDA requested but not available. Falling back to CPU.")
+        device_str = "cpu"
+        config["device"] = "cpu"
+
+    # 5. Print system info
+    print_system_info(device_str)
+
+    # 6. Set seed
     seed = config.get("seed", 42)
     set_seed(seed)
 
-    # Resolve device
-    target_device = args.device or config.get("device", "cuda")
-    device_str = target_device if torch.cuda.is_available() and target_device == "cuda" else "cpu"
-    print_system_info(device_str)
-
-    # Print full config for reproducibility
+    # 7. Pretty print config
     print("Configuration:")
     pprint.pprint(config)
     print("=" * 60)
 
-    # Resolve directory paths
+    # 8. Determine gt_dir and noisylr_dir
     gt_dir = args.gt_dir or os.path.join(config.get("data_root", "./data"), "GT")
     noisylr_dir = args.noisylr_dir or os.path.join(config.get("data_root", "./data"), "NoisyLR")
 
-    # 2. Build Dataset
+    if not os.path.exists(gt_dir):
+        print(f"Error: GT directory not found at: {gt_dir}")
+        sys.exit(1)
+    if not os.path.exists(noisylr_dir):
+        print(f"Error: NoisyLR directory not found at: {noisylr_dir}")
+        sys.exit(1)
+
+    # 9. Build dataset
     print(f"Building official dataset from GT: {gt_dir} and NoisyLR: {noisylr_dir}")
     official_dataset = RestorationDataset(
         gt_dir=gt_dir,
         noisylr_dir=noisylr_dir,
+        normalize=False,
         augment=True,
     )
+
+    if args.max_samples is not None and args.max_samples < len(official_dataset.pairs):
+        official_dataset.pairs = official_dataset.pairs[: args.max_samples]
+        print(f"Truncated official dataset to {len(official_dataset.pairs)} samples (--max_samples).")
 
     data_cfg = config.get("data", {})
     include_synthetic = data_cfg.get("include_synthetic", False)
@@ -93,23 +126,26 @@ def main():
     if include_synthetic:
         try:
             print("Including dynamic synthetic degradation pairs...")
+            augmentor = SyntheticDegradationAugmentor()
+            synth_dir = os.path.join(config.get("data_root", "./data"), "NoisyLR_synth")
+            samples_per_img = data_cfg.get("synthetic_samples_per_image", 2)
+            # In on-the-fly mode, we wrap GT with SyntheticRestorationDataset
             synth_dataset = SyntheticRestorationDataset(
                 gt_dir=gt_dir,
-                augmentor=SyntheticDegradationAugmentor(),
+                augmentor=augmentor,
                 augment=True,
             )
+            if args.max_samples is not None and args.max_samples < len(synth_dataset.gt_files):
+                synth_dataset.gt_files = synth_dataset.gt_files[: args.max_samples]
             dataset = ConcatDataset([official_dataset, synth_dataset])
-            print(f"Combined official + synthetic dataset size: {len(dataset)}")
+            print(f"Combined official ({len(official_dataset)}) + synthetic ({len(synth_dataset)}) dataset: {len(dataset)} items.")
         except Exception as e:
-            print(f"Warning: Could not load synthetic dataset ({e}). Using official dataset only.")
+            print(f"Warning: Could not configure synthetic dataset ({e}). Using official dataset only.")
             dataset = official_dataset
     else:
         dataset = official_dataset
 
-    if args.max_samples and args.max_samples < len(dataset):
-        dataset = torch.utils.data.Subset(dataset, range(args.max_samples))
-
-    # Split dataset
+    # 10. Split dataset & get dataloaders
     train_ratio = data_cfg.get("train_ratio", 0.70)
     val_ratio = data_cfg.get("val_ratio", 0.20)
     train_ds, val_ds, holdout_ds = create_train_val_split(
@@ -119,21 +155,19 @@ def main():
         seed=seed,
     )
 
-    training_cfg = config.get("training", {})
-    batch_size = args.batch_size or training_cfg.get("batch_size", 8)
-    if args.epochs:
-        training_cfg["epochs"] = args.epochs
+    batch_size = config.get("training", {}).get("batch_size", 8)
+    num_workers = 0 if os.name == "nt" or device_str == "cpu" else 4
+    pin_memory = (device_str == "cuda")
 
-    num_workers = 0 if os.name == "nt" or device_str == "cpu" else 2
     train_loader, val_loader = get_dataloaders(
         train_ds,
         val_ds,
         batch_size=batch_size,
         num_workers=num_workers,
-        pin_memory=(device_str == "cuda"),
+        pin_memory=pin_memory,
     )
 
-    # 3. Model setup
+    # 11. Build RestoreNet
     model_cfg = config.get("model", {})
     scale_factor = model_cfg.get("scale_factor", 2)
     num_features = model_cfg.get("num_features", 64)
@@ -144,9 +178,11 @@ def main():
         num_features=num_features,
         num_blocks=num_blocks,
     )
+
+    # 12. Parameter count
     print(f"Initialized RestoreNet with {count_parameters(model):,} parameters")
 
-    # 4. Trainer instantiation
+    # 13. Trainer instantiation
     trainer = Trainer(
         model=model,
         train_loader=train_loader,
@@ -155,13 +191,15 @@ def main():
         device=device_str,
     )
 
-    # 5. Resume if requested
+    # 14. Resume if requested
     if args.resume:
         start_epoch = trainer.load_checkpoint(args.resume)
         print(f"Resuming training from epoch {start_epoch}")
 
-    # 6. Fit
+    # 15. Fit
     trainer.fit()
+
+    # 16. Done message
     print("Training complete. Best model saved at checkpoints/best_model.pt")
 
 
