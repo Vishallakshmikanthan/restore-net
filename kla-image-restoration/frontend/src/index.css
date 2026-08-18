@@ -1,69 +1,171 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer base {
-  body {
-    @apply bg-background text-on-surface font-body-md overflow-hidden;
+@theme {
+  --color-surface-dim: #10131c;
+  --color-primary-fixed: #9cf0ff;
+  --color-primary-container: #00e5ff;
+  --color-on-secondary-fixed: #001945;
+  --color-tertiary: #ffe8de;
+  --color-tertiary-fixed-dim: #ffb692;
+  --color-on-error-container: #ffdad6;
+  --color-on-tertiary: #562000;
+  --color-outline-variant: #3b494c;
+  --color-on-primary-fixed-variant: #004f58;
+  --color-outline: #849396;
+  --color-tertiary-fixed: #ffdbcb;
+  --color-secondary-fixed-dim: #b0c6ff;
+  --color-primary: #c3f5ff;
+  --color-surface: #10131c;
+  --color-on-surface-variant: #bac9cc;
+  --color-inverse-primary: #006875;
+  --color-secondary-fixed: #d9e2ff;
+  --color-on-primary: #00363d;
+  --color-on-tertiary-fixed: #341100;
+  --color-tertiary-container: #ffc3a7;
+  --color-surface-container-highest: #31353e;
+  --color-on-secondary: #002d6e;
+  --color-on-tertiary-fixed-variant: #7a3000;
+  --color-surface-container-lowest: #0a0e16;
+  --color-surface-container-low: #181c24;
+  --color-on-primary-fixed: #001f24;
+  --color-background: #050810;
+  --color-surface-container: #1c2028;
+  --color-on-surface: #e0e2ee;
+  --color-on-background: #e0e2ee;
+  --color-surface-container-high: #262a33;
+  --color-primary-fixed-dim: #00daf3;
+  --color-on-secondary-fixed-variant: #00429b;
+  --color-secondary-container: #0068ed;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-tertiary-container: #963d00;
+  --color-on-primary-container: #00626e;
+  --color-on-error: #690005;
+  --color-surface-bright: #353943;
+  --color-secondary: #b0c6ff;
+  --color-surface-tint: #00daf3;
+  --color-inverse-surface: #e0e2ee;
+  --color-on-secondary-container: #f2f3ff;
+  --color-inverse-on-surface: #2d303a;
+  --color-surface-variant: #31353e;
+  --color-border-subtle: #1E2D45;
+  --color-accent-cyan: #00E5FF;
+  --color-layer-base: #050810;
+  --color-layer-mid: #0C1120;
+  --color-layer-top: #111827;
+  --color-layer-hover: #1A2540;
+  --color-success: #00C896;
+  --color-alert: #FF4444;
+
+  --radius-clinical: 6px;
+
+  --spacing-stack-sm: 4px;
+  --spacing-stack-md: 12px;
+  --spacing-stack-lg: 24px;
+  --spacing-density-compact: 0.25rem;
+  --spacing-unit: 4px;
+  --spacing-container-padding: 1.5rem;
+  --spacing-density-normal: 0.75rem;
+  --spacing-gutter: 1rem;
+  --spacing-panel: 380px;
+
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-sans: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+
+.font-mono-custom {
+  font-family: var(--font-mono);
+}
+
+.scanline, .scan-line {
+  width: 100%;
+  height: 2px;
+  background-color: var(--color-accent-cyan);
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0.7;
+  animation: scan 2s linear infinite;
+  display: none;
+  box-shadow: 0 0 10px var(--color-accent-cyan);
+}
+
+@keyframes scan {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.processing .scanline, .processing .scan-line {
+  display: block;
+}
+
+.waveform {
+  stroke: var(--color-accent-cyan);
+  stroke-width: 2;
+  fill: none;
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: drawWave 4s linear infinite;
+}
+
+@keyframes drawWave {
+  to {
+    stroke-dashoffset: 0;
   }
 }
 
-@layer utilities {
-  .scan-line {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: theme('colors.primary-container');
-      opacity: 0;
-      pointer-events: none;
-      box-shadow: 0 0 10px theme('colors.primary-container');
-  }
-
-  .processing .scan-line {
-      animation: scan 1.5s linear infinite;
-  }
-
-  @keyframes scan {
-      0% { top: 0; opacity: 0; }
-      10% { opacity: 0.8; }
-      90% { opacity: 0.8; }
-      100% { top: 100%; opacity: 0; }
-  }
-
-  .waveform-path {
-      stroke-dasharray: 1000;
-      stroke-dashoffset: 0;
-  }
-
-  .processing .waveform-path {
-      animation: wave-pulse 1s ease-in-out infinite, wave-flow 2s linear infinite;
-  }
-
-  @keyframes wave-flow {
-      to { stroke-dashoffset: -1000; }
-  }
-
-  @keyframes wave-pulse {
-      0% { stroke: theme('colors.on-surface-variant'); stroke-width: 1; }
-      50% { stroke: theme('colors.primary-container'); stroke-width: 2; }
-      100% { stroke: theme('colors.on-surface-variant'); stroke-width: 1; }
-  }
-
-  .chart-bar {
-      transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-      width: 0%;
-  }
+.waveform-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 0;
 }
 
-/* Custom Animations & Technical UI details */
+.processing .waveform-path {
+  animation: wave-pulse 1s ease-in-out infinite, wave-flow 2s linear infinite;
+}
+
+@keyframes wave-flow {
+  to { stroke-dashoffset: -1000; }
+}
+
+@keyframes wave-pulse {
+  0% { stroke: var(--color-on-surface-variant); stroke-width: 1; }
+  50% { stroke: var(--color-accent-cyan); stroke-width: 2; }
+  100% { stroke: var(--color-on-surface-variant); stroke-width: 1; }
+}
+
+.pulse {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
 canvas {
-    image-rendering: pixelated; /* Essential for technical density feel */
+  image-rendering: pixelated;
 }
 
-/* Scrollbar styling for clinical density */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: theme('colors.outline-variant'); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: theme('colors.outline'); }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-layer-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-subtle);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}

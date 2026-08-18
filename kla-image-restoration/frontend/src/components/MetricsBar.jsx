@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
-// A simple hook to animate numbers
-const useAnimatedValue = (targetValue, duration = 1000) => {
+const useAnimatedValue = (targetValue, duration = 800) => {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
+    if (targetValue === 0) {
+      setValue(0);
+      return;
+    }
+
     let startTimestamp = null;
-    let startValue = value;
+    const startValue = value;
 
     const step = (timestamp) => {
       if (!startTimestamp) startTimestamp = timestamp;
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      
-      // easeOutExpo
       const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      
       setValue(startValue + (targetValue - startValue) * easeProgress);
 
       if (progress < 1) {
@@ -28,37 +29,58 @@ const useAnimatedValue = (targetValue, duration = 1000) => {
   return value;
 };
 
-const AnimatedMetric = ({ value, decimals = 2 }) => {
-  const animated = useAnimatedValue(value);
+const AnimatedMetric = ({ value, decimals = 2, active = false }) => {
+  const animated = useAnimatedValue(active ? value : 0);
+  if (!active) return <span>--</span>;
   return <span>{animated.toFixed(decimals)}</span>;
 };
 
-export default function MetricsBar({ metrics }) {
+export default function MetricsBar({ metrics, hasResults = false }) {
   return (
-    <div className="grid grid-cols-4 gap-stack-md shrink-0">
-      <div className="bg-surface-container border border-outline-variant p-3 flex flex-col justify-between rounded">
-        <span className="text-label-xs font-label-xs uppercase text-on-surface-variant">PSNR (dB)</span>
-        <span className="text-metric-lg font-metric-lg text-on-surface text-right mt-2">
-          <AnimatedMetric value={metrics.psnr} decimals={2} />
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-gutter shrink-0">
+      {/* PSNR */}
+      <div className="bg-layer-top border border-border-subtle rounded-clinical p-3.5 flex flex-col justify-between">
+        <span className="text-[11px] font-mono text-on-surface-variant font-medium uppercase mb-1">
+          PSNR (dB)
+        </span>
+        <span className={`text-[28px] font-mono font-bold transition-all ${hasResults ? 'text-on-surface' : 'text-on-surface/20'}`}>
+          <AnimatedMetric value={metrics.psnr} decimals={2} active={hasResults} />
         </span>
       </div>
-      <div className="bg-surface-container border border-outline-variant p-3 flex flex-col justify-between rounded">
-        <span className="text-label-xs font-label-xs uppercase text-on-surface-variant">SSIM</span>
-        <span className="text-metric-lg font-metric-lg text-on-surface text-right mt-2">
-          <AnimatedMetric value={metrics.ssim} decimals={3} />
+
+      {/* SSIM */}
+      <div className="bg-layer-top border border-border-subtle rounded-clinical p-3.5 flex flex-col justify-between">
+        <span className="text-[11px] font-mono text-on-surface-variant font-medium uppercase mb-1">
+          SSIM
+        </span>
+        <span className={`text-[28px] font-mono font-bold transition-all ${hasResults ? 'text-on-surface' : 'text-on-surface/20'}`}>
+          <AnimatedMetric value={metrics.ssim} decimals={3} active={hasResults} />
         </span>
       </div>
-      <div className="bg-surface-container border border-outline-variant p-3 flex flex-col justify-between rounded">
-        <span className="text-label-xs font-label-xs uppercase text-on-surface-variant">LPIPS</span>
-        <span className="text-metric-lg font-metric-lg text-primary text-right mt-2">
-          <AnimatedMetric value={metrics.lpips} decimals={3} />
+
+      {/* LPIPS */}
+      <div className="bg-layer-top border border-border-subtle rounded-clinical p-3.5 flex flex-col justify-between">
+        <span className="text-[11px] font-mono text-on-surface-variant font-medium uppercase mb-1">
+          LPIPS
+        </span>
+        <span className={`text-[28px] font-mono font-bold transition-all ${hasResults ? 'text-on-surface' : 'text-on-surface/20'}`}>
+          <AnimatedMetric value={metrics.lpips} decimals={3} active={hasResults} />
         </span>
       </div>
-      <div className="bg-surface-container border border-outline-variant p-3 flex flex-col justify-between rounded">
-        <span className="text-label-xs font-label-xs uppercase text-on-surface-variant">Latency (ms)</span>
-        <span className="text-metric-lg font-metric-lg text-primary-container text-right mt-2">
-          <AnimatedMetric value={metrics.latency} decimals={1} />
+
+      {/* E2E RUNTIME */}
+      <div className="bg-layer-top border border-border-subtle border-l-2 border-l-accent-cyan rounded-clinical p-3.5 flex flex-col justify-between shadow-[0_0_15px_rgba(0,229,255,0.05)]">
+        <span className="text-[11px] font-mono text-accent-cyan font-bold uppercase mb-1">
+          E2E RUNTIME
         </span>
+        <div className="flex items-baseline gap-1">
+          <span className={`text-[28px] font-mono font-bold transition-all ${hasResults ? 'text-accent-cyan' : 'text-accent-cyan/20'}`}>
+            <AnimatedMetric value={metrics.latency} decimals={1} active={hasResults} />
+          </span>
+          <span className={`text-[12px] font-mono ${hasResults ? 'text-accent-cyan/80' : 'text-accent-cyan/20'}`}>
+            ms
+          </span>
+        </div>
       </div>
     </div>
   );
