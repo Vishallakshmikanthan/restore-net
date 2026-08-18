@@ -1,5 +1,6 @@
 """Data module for KLA Image Restoration."""
 
+# pyrefly: ignore [missing-import]
 from src.data.augmentation import (
     SyntheticDegradationAugmentor,
     SyntheticRestorationDataset,

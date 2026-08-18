@@ -12,7 +12,7 @@ model:
   num_blocks: 10
   upsample_mode: pixel_shuffle
 training:
-  epochs: 100
+  epochs: 150
   batch_size: 8
   learning_rate: 0.001
   optimizer: Adam
@@ -22,7 +22,7 @@ training:
   gradient_clip: 1.0
   scheduler:
     name: CosineAnnealingLR
-    T_max: 100
+    T_max: 150
     eta_min: 0.000001
 loss:
   lambda_pixel: 1.0
@@ -35,7 +35,7 @@ data:
   train_ratio: 0.70
   val_ratio: 0.20
   include_synthetic: true
-  synthetic_samples_per_image: 2
+  synthetic_samples_per_image: 3
 checkpointing:
   save_every_n_epochs: 5
   keep_last_n: 3

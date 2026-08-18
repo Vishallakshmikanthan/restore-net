@@ -180,7 +180,7 @@ def create_presentation():
         "           │\n"
         "           ├────────────────────────────┐  [Global Residual Identity Skip]\n"
         "           ▼                            │\n"
-        "  [Bilinear Upsample ×2]                │  [B, 1, 256, 256]\n"
+        "  [PixelShuffle Upsample ×2]            │  Learned sub-pixel conv → [B, 1, 256, 256]\n"
         "           ▼                            │\n"
         "  [Conv2d (1 → 64, 3×3)]                │  Initial Shallow Feature Extraction\n"
         "           ▼                            │\n"
@@ -282,8 +282,8 @@ def create_presentation():
     p_eq.space_after = Pt(16)
 
     # Add Table
-    rows, cols = 4, 4
-    left, top, width, height = Inches(0.8), Inches(2.6), Inches(11.73), Inches(3.8)
+    rows, cols = 5, 4
+    left, top, width, height = Inches(0.8), Inches(2.6), Inches(11.73), Inches(4.2)
     table_shape = slide7.shapes.add_table(rows, cols, left, top, width, height)
     tbl = table_shape.table
 
@@ -291,7 +291,8 @@ def create_presentation():
     row_data = [
         ["L1 Pixel Loss", "λ = 1.0", "|| ŷ - y ||_1", "Pixel fidelity, robust outlier resistance, un-clamped gradient flow"],
         ["SSIM Loss", "λ = 0.3", "1.0 - SSIM(ŷ_c, y)", "Preserves structural coherence, line edges, and contrast statistics"],
-        ["LPIPS Perceptual", "λ = 0.1", "AlexNet Deep Features", "Perceptual alignment, eliminates blurry over-smoothed artifacts"]
+        ["LPIPS Perceptual", "λ = 0.1", "AlexNet Deep Features", "Perceptual alignment, eliminates blurry over-smoothed artifacts"],
+        ["Frequency (FFT) Loss", "λ = 0.05", "|| |FFT(ŷ)| - |FFT(y)| ||_1", "Targets periodic wafer structure & fine-line grids that L1/SSIM underweight"]
     ]
     for c_idx, h_text in enumerate(headers):
         cell = tbl.cell(0, c_idx)

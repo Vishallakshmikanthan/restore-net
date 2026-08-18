@@ -1,0 +1,4 @@
+# RestoreNet repo — gitattributes
+# Help reviewers fetch trained weights without polluting diffs.
+*.pt filter=lfs diff=lfs merge=lfs -text
+*.pkl filter=lfs diff=lfs merge=lfs -text

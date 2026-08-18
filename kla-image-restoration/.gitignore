@@ -1,7 +1,9 @@
 /data/
 !src/data/
 !**/src/data/**
-checkpoints/
+checkpoints/*
+!checkpoints/best_model.pt
+!checkpoints/baseline_best.pt
 logs/
 __pycache__/
 *.pyc

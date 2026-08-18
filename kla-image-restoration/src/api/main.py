@@ -67,6 +67,82 @@ def startup_event():
 def health_check():
     return {"status": "ok", "device": str(device)}
 
+@app.post("/api/evaluate")
+async def evaluate_image(
+    file: UploadFile = File(..., description="NoisyLR input .npy"),
+    gt_file: UploadFile = File(..., description="Ground truth .npy of same shape"),
+):
+    """Restore an input image and compute real PSNR/SSIM/LPIPS against the supplied ground truth.
+
+    Returns JSON with restored bytes (base64-encoded .npy) and real metrics. Used by the
+    frontend when the user provides both input and GT files for live evaluation.
+    """
+    t_start = time.perf_counter()
+
+    # 1. Load input
+    in_bytes = await file.read()
+    try:
+        img_np = np.load(io.BytesIO(in_bytes)).astype(np.float32)
+    except Exception as e:
+        return {"error": f"Failed to load input npy: {e}"}
+
+    # 2. Load ground truth
+    gt_bytes = await gt_file.read()
+    try:
+        gt_np = np.load(io.BytesIO(gt_bytes)).astype(np.float32)
+    except Exception as e:
+        return {"error": f"Failed to load GT npy: {e}"}
+
+    # 3. Inference
+    tensor = torch.from_numpy(img_np).unsqueeze(0).unsqueeze(0).to(device)
+    with torch.inference_mode():
+        out_tensor = model(tensor)
+    out_np = out_tensor.squeeze().cpu().numpy()
+    out_clipped = np.clip(out_np, 0.0, 1.0).astype(np.float32)
+
+    # 4. Real metrics using skimage-backed helpers
+    gt_clipped = np.clip(gt_np, 0.0, 1.0).astype(np.float32)
+    # If GT is low-res and prediction is high-res (×2), downsample pred for shape match
+    if out_clipped.shape != gt_clipped.shape:
+        try:
+            import torch.nn.functional as F
+            pred_t = torch.from_numpy(out_clipped).unsqueeze(0).unsqueeze(0)
+            gt_t = torch.from_numpy(gt_clipped).unsqueeze(0).unsqueeze(0)
+            # Resize pred to GT shape via bilinear
+            pred_t = F.interpolate(pred_t, size=gt_t.shape[-2:], mode="bilinear", align_corners=False)
+            out_clipped = pred_t.squeeze().cpu().numpy()
+        except Exception:
+            return {"error": f"Shape mismatch (pred {out_clipped.shape} vs gt {gt_clipped.shape}) and resize failed."}
+
+    psnr_val = float(compute_psnr(out_clipped, gt_clipped))
+    ssim_val = float(compute_ssim(out_clipped, gt_clipped))
+    try:
+        lpips_val = float(compute_lpips(
+            torch.from_numpy(out_clipped).unsqueeze(0).unsqueeze(0),
+            torch.from_numpy(gt_clipped).unsqueeze(0).unsqueeze(0),
+            device=str(device),
+        ))
+    except Exception:
+        lpips_val = 0.0
+
+    latency_ms = (time.perf_counter() - t_start) * 1000.0
+
+    # 5. Return JSON with metrics and base64-encoded restored .npy
+    import base64
+    out_io = io.BytesIO()
+    np.save(out_io, out_clipped)
+    encoded = base64.b64encode(out_io.getvalue()).decode("ascii")
+
+    return {
+        "psnr": psnr_val,
+        "ssim": ssim_val,
+        "lpips": lpips_val,
+        "latency_ms": latency_ms,
+        "restored_b64": encoded,
+        "restored_shape": list(out_clipped.shape),
+        "device": str(device),
+    }
+
 @app.post("/api/restore")
 async def restore_image(file: UploadFile = File(...)):
     t_start = time.perf_counter()

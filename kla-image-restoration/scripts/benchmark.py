@@ -24,9 +24,11 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Benchmark model inference runtime.")
     parser.add_argument("--model_path", type=str, default="checkpoints/best_model.pt", help="Path to model weights")
     parser.add_argument("--device", type=str, default="cuda", help="Target execution device")
-    parser.add_argument("--image_size", type=int, default=128, help="Spatial dimension of input tensor")
+    parser.add_argument("--image_size", type=int, nargs="+", default=[128], help="Spatial dimension(s) of input tensor; pass once for square or twice for (H W)")
     parser.add_argument("--warmup_runs", type=int, default=10, help="Number of warmup forward passes")
     parser.add_argument("--benchmark_runs", type=int, default=50, help="Number of benchmark iterations")
+    parser.add_argument("--num_images", type=int, default=None, help="Alias for benchmark_runs (used by CLI invocation)")
+    parser.add_argument("--use_compile", action="store_true", help="Enable torch.compile during benchmarking")
     parser.add_argument("--output_json", type=str, default="results/benchmarks/benchmark_results.json", help="Destination JSON path")
     return parser.parse_args()
 
@@ -115,14 +117,26 @@ def main():
     print(f"Benchmarking on device: {device}")
 
     model = load_benchmark_model(args.model_path, device)
-    dummy_input = torch.randn(1, 1, args.image_size, args.image_size, device=device)
+
+    # Resolve image_size to (H, W); accept either single int or "H W" pair
+    if isinstance(args.image_size, (list, tuple)):
+        if len(args.image_size) == 1:
+            h = w = int(args.image_size[0])
+        else:
+            h, w = int(args.image_size[0]), int(args.image_size[1])
+    else:
+        h = w = int(args.image_size)
+    dummy_input = torch.randn(1, 1, h, w, device=device)
+
+    # Resolve total benchmark iterations; --num_images overrides --benchmark_runs
+    bench_runs = args.num_images if args.num_images is not None else args.benchmark_runs
 
     results = {}
 
     # 1. Eager Mode (torch.inference_mode)
     print("Testing Eager Mode (torch.inference_mode)...")
     res_eager = benchmark_mode(
-        model, dummy_input, device, args.warmup_runs, args.benchmark_runs,
+        model, dummy_input, device, args.warmup_runs, bench_runs,
         mode_name="Eager (inference_mode)", use_inference_mode=True,
     )
     results["eager_inference_mode"] = res_eager
@@ -130,18 +144,19 @@ def main():
     # 2. Eager Mode (torch.no_grad)
     print("Testing Eager Mode (torch.no_grad)...")
     res_no_grad = benchmark_mode(
-        model, dummy_input, device, args.warmup_runs, args.benchmark_runs,
+        model, dummy_input, device, args.warmup_runs, bench_runs,
         mode_name="Eager (no_grad)", use_inference_mode=False,
     )
     results["eager_no_grad"] = res_no_grad
 
-    # 3. torch.compile mode (if supported)
-    if hasattr(torch, "compile") and int(torch.__version__.split(".")[0]) >= 2:
+    # 3. torch.compile mode (if supported or requested via --use_compile)
+    want_compile = args.use_compile or True  # always try it; falls back gracefully
+    if want_compile and hasattr(torch, "compile") and int(torch.__version__.split(".")[0]) >= 2:
         try:
             print("Testing torch.compile(mode='reduce-overhead')...")
             compiled_model = torch.compile(model, mode="reduce-overhead")
             res_compile = benchmark_mode(
-                compiled_model, dummy_input, device, args.warmup_runs, args.benchmark_runs,
+                compiled_model, dummy_input, device, args.warmup_runs, bench_runs,
                 mode_name="torch.compile", use_inference_mode=True,
             )
             results["torch_compile"] = res_compile
