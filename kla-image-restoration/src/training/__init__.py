@@ -8,8 +8,10 @@ from src.training.metrics import (
     compute_psnr,
     compute_ssim,
 )
+from src.training.trainer import Trainer
 
 __all__ = [
+    "Trainer",
     "SSIM",
     "CharbonnierLoss",
     "RestorationLoss",
