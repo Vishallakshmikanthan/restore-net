@@ -1,0 +1,16 @@
+{
+  "ood_metrics": {
+    "ood_psnr_mean": 2.742809582707737,
+    "ood_psnr_std": 0.6156528728845931,
+    "ood_ssim_mean": 0.20896938455006017,
+    "ood_ssim_std": 0.06941055804646562,
+    "ood_lpips_mean": 0.9335680074161954,
+    "ood_lpips_std": 0.022514108915758377
+  },
+  "noise_metrics": {
+    "noise_psnr_mean": 5.443209513259037,
+    "noise_ssim_mean": 0.024636317659804147,
+    "noise_lpips_mean": 0.854194438457489
+  },
+  "in_distribution_psnr": 2.925157684366072
+}
