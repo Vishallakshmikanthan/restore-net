@@ -2,8 +2,6 @@
 
 <div align="center">
 
-![RestoreNet Banner](../screenshots/Screenshot%202026-08-18%20222627.png)
-
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0+-ee4c2c.svg)](https://pytorch.org/)
 [![React](https://img.shields.io/badge/React-19.2+-61DAFB.svg)](https://reactjs.org/)
@@ -22,11 +20,11 @@
 - [Team Information](#-team-information)
 - [Project Overview](#-project-overview)
 - [Problem Statement](#-problem-statement)
+- [Application Screenshots](#-application-screenshots)
 - [Architecture](#-architecture)
 - [Data Flow](#-data-flow)
 - [CNN Implementation Details](#-cnn-implementation-details)
 - [Web Interface](#-web-interface)
-- [Screenshots Gallery](#-screenshots-gallery)
 - [Performance Metrics](#-performance-metrics)
 - [Installation & Setup](#-installation--setup)
 - [Usage](#-usage)
@@ -96,6 +94,26 @@ RestoreNet performs **joint restoration** using:
 - Channel attention mechanisms
 - Multi-term composite loss (L1 + SSIM + LPIPS)
 - Global residual connections
+
+---
+
+## 📸 Application Screenshots
+
+### 1. Three-Panel Image Display
+![Three-Panel Display](screenshots/Screenshot%202026-08-18%20222636.png)
+*Main interface showing Input (NoisyLR), Restored Output, and Residual thermal map*
+
+### 2. Interactive Before/After Comparison
+![Comparison Slider](screenshots/Screenshot%202026-08-18%20222701.png)
+*Drag the cyan slider to compare degraded input vs. restored output in real-time*
+
+### 3. Real-Time Metrics Dashboard
+![Metrics Dashboard](screenshots/Screenshot%202026-08-18%20222710.png)
+*Live display of PSNR, SSIM, LPIPS quality metrics and inference latency*
+
+### 4. Pipeline Execution Profile
+![Pipeline Visualization](screenshots/Screenshot%202026-08-18%20222720.png)
+*Stage-wise timing breakdown showing I/O, preprocessing, inference, and post-processing*
 
 ---
 
@@ -560,11 +578,8 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 
 #### Application Overview
 
-![RestoreNet Main Interface](../screenshots/Screenshot%202026-08-18%20222627.png)
-*Main application interface with control panel, image viewer, and metrics dashboard*
-
-![Image Processing View](../screenshots/Screenshot%202026-08-18%20222636.png)
-*Three-panel image comparison: Input, Restored, and Residual visualization*
+![Main Interface Overview](screenshots/Screenshot%202026-08-18%20222636.png)
+*RestoreNet web application with integrated control panel and visualization*
 
 ### Key Components
 
@@ -587,7 +602,7 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 3. RESIDUAL (Δ Map)   - Thermal heatmap of corrections
 ```
 
-![Image Comparison Interface](../screenshots/Screenshot%202026-08-18%20222701.png)
+![Image Comparison Interface](screenshots/Screenshot%202026-08-18%20222701.png)
 *Interactive comparison slider showing before/after restoration*
 
 **Interactive Slider**:
@@ -607,7 +622,7 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 // Displays real computed metrics when GT is uploaded
 ```
 
-![Metrics Dashboard](../screenshots/Screenshot%202026-08-18%20222710.png)
+![Metrics Dashboard](screenshots/Screenshot%202026-08-18%20222710.png)
 *Real-time metrics display showing PSNR, SSIM, LPIPS, and latency measurements*
 
 #### 4. **System Trace** (Top)
@@ -627,7 +642,7 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 └─────────┴──────────┴───────────┴───────────┴─────────┘
 ```
 
-![Pipeline Trace Visualization](../screenshots/Screenshot%202026-08-18%20222720.png)
+![Pipeline Trace Visualization](screenshots/Screenshot%202026-08-18%20222720.png)
 *Pipeline execution profile showing stage-wise timing breakdown and total latency*
 
 ### UI/UX Design Principles
@@ -640,33 +655,7 @@ Built with **React 19** + **Vite** + **Tailwind CSS**
 
 ---
 
-## � Screenshots Gallery
-
-### Complete Application Workflow
-
-#### 1. Main Application Interface
-![Main Interface](../screenshots/Screenshot%202026-08-18%20222627.png)
-*Full view of RestoreNet application showing control panel, image processing area, and metrics*
-
-#### 2. Image Upload and Processing
-![Processing View](../screenshots/Screenshot%202026-08-18%20222636.png)
-*Three-panel display with input image, restored output, and residual thermal map*
-
-#### 3. Interactive Comparison Slider
-![Comparison Slider](../screenshots/Screenshot%202026-08-18%20222701.png)
-*Drag the slider to compare before/after restoration in real-time*
-
-#### 4. Metrics and Performance Dashboard
-![Metrics Dashboard](../screenshots/Screenshot%202026-08-18%20222710.png)
-*Real-time display of PSNR, SSIM, LPIPS metrics and inference latency*
-
-#### 5. Pipeline Execution Profile
-![Pipeline Visualization](../screenshots/Screenshot%202026-08-18%20222720.png)
-*Stage-wise timing breakdown showing processing bottlenecks and optimization opportunities*
-
----
-
-## �📈 Performance Metrics
+## � Performance Metrics
 
 ### Quantitative Results
 
