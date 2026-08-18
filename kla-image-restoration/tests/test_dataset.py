@@ -3,10 +3,15 @@ Self-contained unit and pipeline integration tests for dataset, augmentation, an
 """
 
 import os
+import sys
 import tempfile
+from pathlib import Path
 import numpy as np
 import pytest
 import torch
+
+# Ensure repository root is on sys.path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from src.data.augmentation import (
     SyntheticDegradationAugmentor,
@@ -28,7 +33,7 @@ def test_full_data_pipeline():
     6. Asserts that clipping has NOT been applied: noisylr.min() can be < 0 or noisylr.max() can be > 1.
     7. Calls create_train_val_split and asserts sizes sum to 10.
     8. Instantiates SyntheticDegradationAugmentor and calls generate_synthetic_pair on a dummy image;
-       asserts output shape matches input when downsample_factor=1 (or is valid degraded array).
+       asserts output shape matches input when downsample_factors=(1,).
     9. Prints "ALL DATA PIPELINE TESTS PASSED" on success.
     """
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -113,3 +118,4 @@ def test_restoration_dataset_super_resolution_shape():
 
 if __name__ == "__main__":
     test_full_data_pipeline()
+    test_restoration_dataset_super_resolution_shape()
