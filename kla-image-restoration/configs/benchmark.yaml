@@ -1,0 +1,4 @@
+warmup_runs: 10
+benchmark_runs: 100
+batch_sizes: [1, 4, 8]
+use_compile: true

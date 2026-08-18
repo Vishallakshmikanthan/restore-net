@@ -1,0 +1,6 @@
+seed: 42
+device: cuda
+data_root: ./data
+output_dir: ./results
+checkpoint_dir: ./checkpoints
+log_dir: ./logs
