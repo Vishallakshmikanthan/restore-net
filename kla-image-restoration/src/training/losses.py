@@ -89,19 +89,21 @@ class CharbonnierLoss(nn.Module):
 
 
 class RestorationLoss(nn.Module):
-    """Composite loss function combining Pixel Loss (L1), Structural Loss (SSIM), and Perceptual Loss (LPIPS)."""
+    """Composite loss function combining Pixel Loss (L1), Structural Loss (SSIM), Perceptual Loss (LPIPS), and Frequency Loss (FFT)."""
 
     def __init__(
         self,
         lambda_pixel: float = 1.0,
         lambda_ssim: float = 0.3,
         lambda_lpips: float = 0.1,
+        lambda_freq: float = 0.0,
         device: str = "cuda",
     ):
         super().__init__()
         self.lambda_pixel = lambda_pixel
         self.lambda_ssim = lambda_ssim
         self.lambda_lpips = lambda_lpips
+        self.lambda_freq = lambda_freq
         self.target_device = device
 
         self.l1 = nn.L1Loss()
@@ -117,6 +119,12 @@ class RestorationLoss(nn.Module):
             except Exception as e:
                 print(f"Warning: LPIPS unavailable ({e}), using L1+SSIM only.")
                 self.lpips_fn = None
+
+    def _freq_loss(self, pred: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        """Frequency domain loss on the magnitude spectrum via 2D FFT."""
+        pred_fft = torch.fft.fft2(pred, norm="ortho")
+        tgt_fft = torch.fft.fft2(target, norm="ortho")
+        return torch.mean(torch.abs(pred_fft - tgt_fft))
 
     def forward(self, pred: torch.Tensor, target: torch.Tensor) -> Tuple[torch.Tensor, Dict[str, float]]:
         """Compute composite loss.
@@ -150,15 +158,23 @@ class RestorationLoss(nn.Module):
         else:
             lpips_loss = torch.tensor(0.0, device=pred.device)
 
+        # 4. Frequency domain loss
+        if self.lambda_freq > 0:
+            freq_loss = self._freq_loss(pred_clipped, target)
+        else:
+            freq_loss = torch.tensor(0.0, device=pred.device)
+
         total_loss = (
             self.lambda_pixel * l1_loss
             + self.lambda_ssim * ssim_loss
             + self.lambda_lpips * lpips_loss
+            + self.lambda_freq * freq_loss
         )
 
         loss_dict = {
             "l1": l1_loss.item(),
             "ssim_loss": ssim_loss.item(),
             "lpips": lpips_loss.item() if isinstance(lpips_loss, torch.Tensor) else float(lpips_loss),
+            "freq": freq_loss.item() if isinstance(freq_loss, torch.Tensor) else float(freq_loss),
         }
         return total_loss, loss_dict

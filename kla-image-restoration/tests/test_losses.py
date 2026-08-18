@@ -55,6 +55,15 @@ class TestRestorationLoss(unittest.TestCase):
         total_loss, loss_dict = loss_fn(img, img)
         self.assertLess(total_loss.item(), 0.01)
 
+    def test_loss_with_freq(self):
+        loss_fn = RestorationLoss(lambda_pixel=1.0, lambda_ssim=0.3, lambda_lpips=0.0, lambda_freq=0.05)
+        pred = torch.rand(2, 1, 64, 64)
+        target = torch.rand(2, 1, 64, 64)
+        total_loss, loss_dict = loss_fn(pred, target)
+        self.assertGreater(total_loss.item(), 0.0)
+        self.assertIn("freq", loss_dict)
+        self.assertGreater(loss_dict["freq"], 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -45,6 +45,7 @@ class Trainer:
             lambda_pixel=loss_cfg.get("lambda_pixel", 1.0),
             lambda_ssim=loss_cfg.get("lambda_ssim", 0.3),
             lambda_lpips=loss_cfg.get("lambda_lpips", 0.1),
+            lambda_freq=loss_cfg.get("lambda_freq", 0.0),
             device=str(self.device),
         ).to(self.device)
 

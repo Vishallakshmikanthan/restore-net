@@ -99,6 +99,13 @@ class TestRestoreNet(unittest.TestCase):
         out = model(x)
         self.assertEqual(out.shape, (1, 1, 256, 256))
 
+    def test_pixel_shuffle_upsample(self):
+        model = RestoreNet(scale_factor=2, num_features=64, num_blocks=5, upsample_mode="pixel_shuffle")
+        x = torch.randn(2, 1, 64, 64)
+        out = model(x)
+        self.assertEqual(out.shape, (2, 1, 128, 128))
+        self.assertFalse(torch.isnan(out).any())
+
 
 if __name__ == "__main__":
     unittest.main()

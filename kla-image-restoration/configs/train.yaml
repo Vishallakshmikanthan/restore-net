@@ -10,6 +10,7 @@ model:
   scale_factor: 2
   num_features: 64
   num_blocks: 10
+  upsample_mode: pixel_shuffle
 training:
   epochs: 100
   batch_size: 8
@@ -27,6 +28,7 @@ loss:
   lambda_pixel: 1.0
   lambda_ssim: 0.3
   lambda_lpips: 0.1
+  lambda_freq: 0.05
 mixed_precision:
   enabled: true
 data:

@@ -172,11 +172,13 @@ def main():
     scale_factor = model_cfg.get("scale_factor", 2)
     num_features = model_cfg.get("num_features", 64)
     num_blocks = model_cfg.get("num_blocks", 10)
+    upsample_mode = model_cfg.get("upsample_mode", "bilinear")
 
     model = RestoreNet(
         scale_factor=scale_factor,
         num_features=num_features,
         num_blocks=num_blocks,
+        upsample_mode=upsample_mode,
     )
 
     # 12. Parameter count

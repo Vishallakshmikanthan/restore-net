@@ -13,14 +13,14 @@ import torch
 import torch.nn as nn
 
 from src.models.baseline import count_parameters
-from src.models.blocks import ChannelAttention, ResidualBlock
+from src.models.blocks import ChannelAttention, PixelShuffleBlock, ResidualBlock
 
 
 class RestoreNet(nn.Module):
     """RestoreNet image restoration model with progressive residual learning and channel attention.
 
     Architecture:
-    1. Bilinear upsampling by `scale_factor`.
+    1. Upsampling (Bilinear interpolation or learned PixelShuffle) by `scale_factor`.
     2. Feature extraction with initial Conv2d.
     3. `num_blocks` ResidualBlocks with interleaved ChannelAttention every 5 blocks.
     4. Mid-level feature convolution.
@@ -37,19 +37,24 @@ class RestoreNet(nn.Module):
         num_features: int = 64,
         num_blocks: int = 10,
         use_attention: bool = True,
+        upsample_mode: str = "bilinear",
     ):
         super().__init__()
         self.scale_factor = scale_factor
         self.num_features = num_features
         self.num_blocks = num_blocks
         self.use_attention = use_attention
+        self.upsample_mode = upsample_mode
 
         # 1. Spatial upsampling
-        self.upsample = nn.Upsample(
-            scale_factor=scale_factor,
-            mode="bilinear",
-            align_corners=False,
-        )
+        if upsample_mode == "pixel_shuffle":
+            self.upsample = PixelShuffleBlock(in_channels=1, scale_factor=scale_factor)
+        else:
+            self.upsample = nn.Upsample(
+                scale_factor=scale_factor,
+                mode="bilinear",
+                align_corners=False,
+            )
 
         # 2. Input feature extraction
         self.conv_in = nn.Conv2d(1, num_features, kernel_size=3, padding=1, bias=True)
