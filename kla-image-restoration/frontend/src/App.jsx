@@ -24,8 +24,7 @@ function App() {
   const [restoredData, setRestoredData] = useState(null);
   const [metrics, setMetrics] = useState({ psnr: 0, ssim: 0, lpips: 0, latency: 0 });
   const [modelConfig, setModelConfig] = useState({
-    strength: 75,
-    checkpoint: 'v3.4-SIGMA-base'
+    strength: 75
   });
   const [showHelpModal, setShowHelpModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);

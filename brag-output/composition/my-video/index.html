@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #050810;
+        color: #e0e2ee;
+        font-family: "Inter", sans-serif;
+      }
+      code,
+      pre,
+      .monospace {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .clip {
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="18"
+      data-width="1920"
+      data-height="1080"
+    >
+      
+      <!-- Scene 1: Hook -->
+      <div
+        class="clip"
+        id="scene-hook"
+        data-start="0"
+        data-duration="3"
+        style="
+          font-size: 48px;
+          color: #00E5FF;
+          padding: 40px;
+          text-shadow: 0 0 20px #00e5ff;
+        "
+      >
+        Ever look at a sensor scan and wish it were clearer?
+      </div>
+
+      <!-- Scene 2: Upload -->
+      <div
+        class="clip"
+        id="scene-upload"
+        data-start="3"
+        data-duration="3"
+        style="
+          font-size: 48px;
+          color: #00E5FF;
+          padding: 40px;
+          text-shadow: 0 0 20px #00e5ff;
+        "
+      >
+        Drop a .npy wafer scan, hit run, and watch it recover.
+      </div>
+
+      <!-- Scene 3: Inference -->
+      <div
+        class="clip"
+        id="scene-inference"
+        data-start="6"
+        data-duration="3"
+        style="
+          font-size: 48px;
+          color: #00E5FF;
+          padding: 40px;
+          text-shadow: 0 0 20px #00e5ff;
+        "
+      >
+        Neural inference, 50% of the pipeline — the heavy lifter.
+      </div>
+
+      <!-- Scene 4: Restored Reveal -->
+      <div
+        class="clip"
+        id="scene-reveal"
+        data-start="9"
+        data-duration="3"
+        style="
+          font-size: 48px;
+          color: #00E5FF;
+          padding: 40px;
+          text-shadow: 0 0 20px #00e5ff;
+        "
+      >
+        Drag to compare noisy vs restored side by side.
+      </div>
+
+      <!-- Scene 5: Metrics -->
+      <div
+        class="clip"
+        id="scene-metrics"
+        data-start="12"
+        data-duration="3"
+        style="
+          font-size: 48px;
+          color: #00E5FF;
+          padding: 40px;
+          text-shadow: 0 0 20px #00e5ff;
+        "
+      >
+        24.64 dB PSNR. 0.6646 SSIM. 0.3636 LPIPS — the fidelity triplets.
+      </div>
+
+      <!-- Scene 6: Outro -->
+      <div
+        class="clip"
+        id="scene-outro"
+        data-start="15"
+        data-duration="3"
+        style="
+          font-size: 48px;
+          color: #00E5FF;
+          padding: 40px;
+          text-shadow: 0 0 20px #00e5ff;
+        "
+      >
+        RestoreNet: degradation-aware, fidelity-first. Available now.
+      </div>
+
+      <audio
+        id="bg-music"
+        data-start="0"
+        data-duration="18"
+        data-track-index="10"
+        data-volume="0.35"
+        src="assets/music/happy-beats-business-moves-vol-1-by-ende-dot-app.mp3"
+      ></audio>
+
+      <audio
+        id="voiceover"
+        data-start="0"
+        data-duration="18"
+        data-track-index="12"
+        data-volume="1"
+        src="assets/voiceover.wav"
+      ></audio>
+
+      <audio
+        id="sfx-upload"
+        data-start="3"
+        data-duration="0.5"
+        data-track-index="11"
+        data-volume="0.8"
+        src="assets/sfx/interface/click_001.ogg"
+      ></audio>
+
+      <audio
+        id="sfx-reveal"
+        data-start="9.5"
+        data-duration="0.5"
+        data-track-index="11"
+        data-volume="0.8"
+        src="assets/sfx/interface/drop_001.ogg"
+      ></audio>
+
+      <audio
+        id="sfx-inference"
+        data-start="6.5"
+        data-duration="0.5"
+        data-track-index="11"
+        data-volume="0.8"
+        src="assets/sfx/impact/impactBell_heavy_000.ogg"
+      ></audio>
+
+      <audio
+        id="sfx-metrics"
+        data-start="12.5"
+        data-duration="0.5"
+        data-track-index="11"
+        data-volume="0.8"
+        src="assets/sfx/interface/click1.ogg"
+      ></audio>
+
+      <audio
+        id="sfx-logo"
+        data-start="15.5"
+        data-duration="0.5"
+        data-track-index="11"
+        data-volume="0.8"
+        src="assets/sfx/impact/impactSoft_medium_000.ogg"
+      ></audio>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines["main"] = tl;
+      </script>
+    </div>
+  </body>
+</html>

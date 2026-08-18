@@ -168,20 +168,21 @@ async def restore_image(file: UploadFile = File(...)):
     out_np = out_tensor.squeeze().cpu().numpy()
     out_clipped = np.clip(out_np, 0.0, 1.0).astype(np.float32)
     
-    # Simulate metrics since we don't have ground truth
-    # In a real scenario with test data, we'd compare against GT
-    # For demo, we just generate plausible numbers
+    # Calculate latency
     latency_ms = (time.perf_counter() - t_start) * 1000.0
-    psnr = 27.43 + (np.random.random() * 2 - 1)
-    ssim = 0.812 + (np.random.random() * 0.02 - 0.01)
-    lpips_val = 0.134 + (np.random.random() * 0.02 - 0.01)
+    
+    # Metrics are unavailable without ground truth
+    # Return -1 to indicate unavailable metrics
+    psnr = -1.0
+    ssim = -1.0
+    lpips_val = -1.0
     
     # Pack the result back to .npy binary format
     out_io = io.BytesIO()
     np.save(out_io, out_clipped)
     out_io.seek(0)
     
-    # Also attach headers with metrics
+    # Attach headers with metrics (showing -1 for unavailable)
     headers = {
         "X-Latency-Ms": f"{latency_ms:.2f}",
         "X-PSNR": f"{psnr:.2f}",

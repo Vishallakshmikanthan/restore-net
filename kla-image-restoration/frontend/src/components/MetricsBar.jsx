@@ -32,6 +32,8 @@ const useAnimatedValue = (targetValue, duration = 800) => {
 const AnimatedMetric = ({ value, decimals = 2, active = false }) => {
   const animated = useAnimatedValue(active ? value : 0);
   if (!active) return <span>--</span>;
+  // Show "N/A" for unavailable metrics (indicated by -1)
+  if (value < 0) return <span className="text-on-surface-variant/60">N/A</span>;
   return <span>{animated.toFixed(decimals)}</span>;
 };
 
@@ -41,7 +43,7 @@ export default function MetricsBar({ metrics, hasResults = false }) {
       {/* PSNR */}
       <div className="bg-layer-top border border-border-subtle rounded-clinical p-3.5 flex flex-col justify-between">
         <span className="text-[11px] font-mono text-on-surface-variant font-medium uppercase mb-1">
-          PSNR (dB)
+          PSNR (dB) {metrics.psnr < 0 && hasResults && <span className="text-[9px]">(GT Required)</span>}
         </span>
         <span className={`text-[28px] font-mono font-bold transition-all ${hasResults ? 'text-on-surface' : 'text-on-surface/20'}`}>
           <AnimatedMetric value={metrics.psnr} decimals={2} active={hasResults} />
@@ -51,7 +53,7 @@ export default function MetricsBar({ metrics, hasResults = false }) {
       {/* SSIM */}
       <div className="bg-layer-top border border-border-subtle rounded-clinical p-3.5 flex flex-col justify-between">
         <span className="text-[11px] font-mono text-on-surface-variant font-medium uppercase mb-1">
-          SSIM
+          SSIM {metrics.ssim < 0 && hasResults && <span className="text-[9px]">(GT Required)</span>}
         </span>
         <span className={`text-[28px] font-mono font-bold transition-all ${hasResults ? 'text-on-surface' : 'text-on-surface/20'}`}>
           <AnimatedMetric value={metrics.ssim} decimals={3} active={hasResults} />
@@ -61,7 +63,7 @@ export default function MetricsBar({ metrics, hasResults = false }) {
       {/* LPIPS */}
       <div className="bg-layer-top border border-border-subtle rounded-clinical p-3.5 flex flex-col justify-between">
         <span className="text-[11px] font-mono text-on-surface-variant font-medium uppercase mb-1">
-          LPIPS
+          LPIPS {metrics.lpips < 0 && hasResults && <span className="text-[9px]">(GT Required)</span>}
         </span>
         <span className={`text-[28px] font-mono font-bold transition-all ${hasResults ? 'text-on-surface' : 'text-on-surface/20'}`}>
           <AnimatedMetric value={metrics.lpips} decimals={3} active={hasResults} />

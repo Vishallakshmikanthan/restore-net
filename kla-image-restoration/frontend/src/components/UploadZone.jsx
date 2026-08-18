@@ -283,15 +283,10 @@ export default function UploadZone({
               <label className="text-[10px] font-mono text-on-surface-variant uppercase">
                 MODEL CHECKPOINT
               </label>
-              <select
-                value={modelConfig.checkpoint}
-                onChange={(e) => setModelConfig({ ...modelConfig, checkpoint: e.target.value })}
-                className="bg-layer-top border border-border-subtle text-[12px] font-mono text-on-surface rounded p-1.5 focus:border-accent-cyan focus:outline-none"
-              >
-                <option value="v3.4-SIGMA-base">v3.4-SIGMA-base (Recommended)</option>
-                <option value="v3.4-SIGMA-heavy">v3.4-SIGMA-heavy (High Denoise)</option>
-                <option value="v3.2-legacy">v3.2-legacy</option>
-              </select>
+              <div className="bg-layer-top border border-border-subtle text-[12px] font-mono text-on-surface rounded p-2 flex items-center justify-between">
+                <span>best_model.pt</span>
+                <span className="text-[10px] text-success">LOADED</span>
+              </div>
             </div>
           </div>
         )}

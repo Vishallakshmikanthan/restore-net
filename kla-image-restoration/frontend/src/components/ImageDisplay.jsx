@@ -144,15 +144,17 @@ export default function ImageDisplay({ inputData, restoredData, isProcessing }) 
             {hasData ? `${resolution}x${resolution}` : 'NOISY'}
           </span>
         </div>
-        <div className="flex-1 relative bg-[#000000] flex items-center justify-center p-3">
-          <canvas
-            ref={canvasInput}
-            width={128}
-            height={128}
-            className={`w-full max-w-[280px] aspect-square object-contain pixelated border border-border-subtle/40 transition-opacity duration-300 ${
-              hasData ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
+        <div className="flex-1 relative bg-[#000000] flex items-center justify-center p-3 overflow-hidden">
+          <div className="flex items-center justify-center w-full h-full">
+            <canvas
+              ref={canvasInput}
+              width={128}
+              height={128}
+              className={`max-w-[280px] max-h-[280px] w-full h-full object-contain pixelated border border-border-subtle/40 transition-opacity duration-300 ${
+                hasData ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          </div>
           <div className="scanline"></div>
           {!hasData && (
             <div className="absolute inset-0 flex items-center justify-center text-on-surface-variant/40 text-[13px] font-mono font-bold">
@@ -176,18 +178,20 @@ export default function ImageDisplay({ inputData, restoredData, isProcessing }) 
         <div
           ref={sliderContainer}
           onMouseDown={hasRestored && hasData ? onMouseDown : undefined}
-          className={`flex-1 relative bg-[#000000] flex items-center justify-center p-3 select-none ${
+          className={`flex-1 relative bg-[#000000] flex items-center justify-center p-3 select-none overflow-hidden ${
             hasRestored && hasData ? (dragging ? 'cursor-col-resize' : 'cursor-ew-resize') : ''
           }`}
         >
-          <canvas
-            ref={canvasOutput}
-            width={128}
-            height={128}
-            className={`w-full max-w-[280px] aspect-square object-contain pixelated border border-border-subtle/40 transition-opacity duration-500 ${
-              hasRestored ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
+          <div className="flex items-center justify-center w-full h-full">
+            <canvas
+              ref={canvasOutput}
+              width={128}
+              height={128}
+              className={`max-w-[280px] max-h-[280px] w-full h-full object-contain pixelated border border-border-subtle/40 transition-opacity duration-500 ${
+                hasRestored ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          </div>
           <div className="scanline"></div>
 
           {/* Interactive Split-Comparison Overlay */}
@@ -195,7 +199,7 @@ export default function ImageDisplay({ inputData, restoredData, isProcessing }) 
             <>
               {/* Overlay Input Image clipped */}
               <div
-                className="absolute inset-3 max-w-[280px] aspect-square mx-auto pointer-events-none overflow-hidden"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[280px] max-h-[280px] w-full h-full pointer-events-none overflow-hidden"
                 style={{ clipPath: `inset(0 ${100 - divider}% 0 0)` }}
               >
                 <canvas
@@ -212,12 +216,15 @@ export default function ImageDisplay({ inputData, restoredData, isProcessing }) 
 
               {/* Divider Handle */}
               <div
-                className="absolute top-3 bottom-3 w-[2px] bg-accent-cyan pointer-events-none shadow-[0_0_8px_#00e5ff]"
-                style={{ left: `calc(50% - 140px + (280px * ${divider / 100}))` }}
+                className="absolute top-1/2 -translate-y-1/2 w-[2px] bg-accent-cyan pointer-events-none shadow-[0_0_8px_#00e5ff]"
+                style={{ 
+                  left: `calc(50% - (140px * ${divider / 100}) + (140px * ${divider / 100}))`,
+                  height: 'min(280px, calc(100% - 24px))'
+                }}
               />
               <div
                 className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-accent-cyan text-layer-base flex items-center justify-center font-mono font-bold text-[10px] shadow-[0_0_10px_#00e5ff] pointer-events-none"
-                style={{ left: `calc(50% - 140px + (280px * ${divider / 100}) - 12px)` }}
+                style={{ left: `calc(50% - 12px + (280px * ${divider / 100} - 140px))` }}
               >
                 ↔
               </div>
@@ -243,15 +250,17 @@ export default function ImageDisplay({ inputData, restoredData, isProcessing }) 
             L1 HEATMAP
           </span>
         </div>
-        <div className="flex-1 relative bg-[#000000] flex items-center justify-center p-3">
-          <canvas
-            ref={canvasDiff}
-            width={128}
-            height={128}
-            className={`w-full max-w-[280px] aspect-square object-contain pixelated border border-border-subtle/40 transition-opacity duration-500 ${
-              hasRestored ? 'opacity-100' : 'opacity-0'
-            }`}
-          />
+        <div className="flex-1 relative bg-[#000000] flex items-center justify-center p-3 overflow-hidden">
+          <div className="flex items-center justify-center w-full h-full">
+            <canvas
+              ref={canvasDiff}
+              width={128}
+              height={128}
+              className={`max-w-[280px] max-h-[280px] w-full h-full object-contain pixelated border border-border-subtle/40 transition-opacity duration-500 ${
+                hasRestored ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
+          </div>
           <div className="scanline"></div>
           {!hasRestored && !isProcessing && (
             <div className="absolute inset-0 flex items-center justify-center text-on-surface-variant/40 text-[13px] font-mono font-bold">
