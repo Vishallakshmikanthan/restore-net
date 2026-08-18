@@ -1,18 +1,135 @@
-/data/
-!src/data/
-!**/src/data/**
-checkpoints/*
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+.virtualenv
+
+# PyTorch
+*.pth
+*.pt
 !checkpoints/best_model.pt
 !checkpoints/baseline_best.pt
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+.npm
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+frontend/dist/
+frontend/build/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
 logs/
-__pycache__/
-*.pyc
-.env
-venv/
-.venv/
-*.egg-info/
-dry_run_test/
-dry_run_outputs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Testing
+.coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Data files (keep structure, ignore content)
+data/GT/*.npy
+data/NoisyLR/*.npy
+results/**/*.npy
+results/**/*.png
+!data/GT/.gitkeep
+!data/NoisyLR/.gitkeep
+
+# Model outputs
 results/inference_outputs/
-*.npy
+results/visualizations/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# TensorBoard
+tensorboard/
+runs/
+
+# Misc
+*.bak
+*.tmp
+.cache/
+temp/
+tmp/
+
+# Deployment
+.vercel
+.netlify
+.render
+
+# Compressed files
 *.tar.gz
+*.zip
+!kla_submission_*.tar.gz

@@ -19,10 +19,17 @@ from src.training.metrics import compute_psnr, compute_ssim, compute_lpips
 
 app = FastAPI(title="RestoreNet Inference API")
 
-# Allow CORS for local React development
+# Allow CORS for local React development and production deployments
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:4173",
+        "http://localhost:5173",
+        "https://*.vercel.app",  # All Vercel preview deployments
+        "https://restorenet.vercel.app",  # Production Vercel domain
+        # Add your custom domain here when ready
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

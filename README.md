@@ -903,7 +903,32 @@ curl -X POST http://localhost:8000/api/restore \
 
 ## 🐳 Deployment
 
-### Docker Deployment
+### Quick Deploy to Vercel + Render
+
+**Fastest way to get RestoreNet live**:
+
+```bash
+# 1. Validate setup
+deploy-checklist.bat
+
+# 2. Push to GitHub
+quick-deploy.bat
+
+# 3. Deploy backend to Render (5-10 min)
+# 4. Deploy frontend to Vercel (2-3 min)
+# 5. Test deployment
+test-deployment.bat
+```
+
+📚 **Deployment Resources**:
+- **Quick Start**: [DEPLOYMENT_QUICK_REFERENCE.md](DEPLOYMENT_QUICK_REFERENCE.md) - 1-page guide
+- **Complete Guide**: [VERCEL_RENDER_DEPLOYMENT.md](VERCEL_RENDER_DEPLOYMENT.md) - Step-by-step
+- **Overview**: [DEPLOYMENT_SUMMARY.md](DEPLOYMENT_SUMMARY.md) - What's included
+- **Navigation**: [DEPLOYMENT_INDEX.md](DEPLOYMENT_INDEX.md) - Find the right resource
+
+### Other Deployment Options
+
+#### Docker Deployment
 
 ```bash
 # Build and start all services
@@ -920,13 +945,13 @@ docker-compose down
 # Backend: http://localhost:8000
 ```
 
-### Cloud Deployment
+#### Local Production Setup
 
 See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed instructions on:
-- Render.com (Backend)
-- Vercel (Frontend)
-- AWS / GCP / Azure
+- Local production servers
+- AWS / GCP / Azure cloud deployment
 - Kubernetes orchestration
+- Custom domain configuration
 
 ---
 
