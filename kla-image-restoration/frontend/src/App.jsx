@@ -3,6 +3,7 @@ import { Upload, Zap, Settings, HelpCircle, Activity } from 'lucide-react';
 import UploadZone from './components/UploadZone';
 import ImageDisplay from './components/ImageDisplay';
 import MetricsBar from './components/MetricsBar';
+import { restoreImage } from './api/client';
 
 const STATE = {
   IDLE: 'IDLE',
@@ -14,7 +15,7 @@ const STATE = {
 function App() {
   const [currentState, setCurrentState] = useState(STATE.IDLE);
   const [fileData, setFileData] = useState(null); // Float32Array
-  const [fileInfo, setFileInfo] = useState(null); // { shape, min, max }
+  const [fileInfo, setFileInfo] = useState(null); // { shape, min, max, originalFile }
   const [restoredData, setRestoredData] = useState(null); // Float32Array
   const [metrics, setMetrics] = useState({ psnr: 0, ssim: 0, lpips: 0, latency: 0 });
 
@@ -30,18 +31,16 @@ function App() {
     
     setCurrentState(STATE.PROCESSING);
     
-    // Convert Float32Array to Blob (simulating npy or passing binary)
-    // Actually, we'll send the raw bytes to the API. 
-    // For now, wait 2s to simulate processing if backend is not wired yet.
-    // In Phase 4 we will replace this with real API call.
-    setTimeout(() => {
-      // Dummy restored data
-      const dummy = new Float32Array(fileData.length);
-      for(let i=0; i<fileData.length; i++) dummy[i] = Math.min(1.0, Math.max(0, fileData[i] + 0.1));
-      setRestoredData(dummy);
-      setMetrics({ psnr: 27.43, ssim: 0.812, lpips: 0.134, latency: 38 });
-      setCurrentState(STATE.COMPLETE);
-    }, 2000);
+    try {
+        const result = await restoreImage(fileInfo.originalFile);
+        setRestoredData(result.restoredData);
+        setMetrics(result.metrics);
+        setCurrentState(STATE.COMPLETE);
+    } catch (error) {
+        console.error("Inference Error:", error);
+        setCurrentState(STATE.ERROR);
+        alert("Failed to restore image. Make sure the API server is running on port 8000.");
+    }
   };
 
   return (
