@@ -20,7 +20,7 @@ class SyntheticDegradationAugmentor:
         self,
         noise_std_range: Tuple[float, float] = (0.01, 0.05),
         speckle_range: Tuple[float, float] = (0.5, 1.5),
-        downsample_factors: Sequence[int] = (2, 3, 4),
+        downsample_factors: Sequence[int] = (2,),
     ) -> None:
         self.noise_std_range = tuple(noise_std_range)
         self.speckle_range = tuple(speckle_range)
@@ -48,13 +48,11 @@ class SyntheticDegradationAugmentor:
 
     def apply_downsample(self, img: np.ndarray, factor: int) -> np.ndarray:
         """
-        Downsamples image by 1/factor scale using bilinear interpolation (order=1).
+        Downsamples image by 1/factor scale.
         """
-        if factor == 1:
+        if factor <= 1:
             return img.copy()
-        # Bilinear interpolation using scipy zoom
-        downscaled = scipy.ndimage.zoom(img, zoom=1.0 / factor, order=1)
-        return downscaled.astype(np.float32)
+        return img[::factor, ::factor].copy().astype(np.float32)
 
     def generate_synthetic_pair(self, gt: np.ndarray) -> np.ndarray:
         """

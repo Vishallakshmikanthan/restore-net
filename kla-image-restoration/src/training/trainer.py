@@ -253,7 +253,8 @@ class Trainer:
             best_tag = " (NEW BEST)" if is_best else ""
             print(
                 f"Epoch {epoch:03d}/{self.epochs:03d} | Train Loss: {train_loss:.4f} | "
-                f"Val PSNR: {val_psnr:6.2f} dB | Val SSIM: {val_ssim:.4f} | Time: {elapsed:.2f}s{best_tag}"
+                f"Val PSNR: {val_psnr:6.2f} dB | Val SSIM: {val_ssim:.4f} | Time: {elapsed:.2f}s{best_tag}",
+                flush=True,
             )
 
             # Early stopping

@@ -108,7 +108,7 @@ class RestorationLoss(nn.Module):
         self.ssim_fn = SSIM()
 
         self.lpips_fn = None
-        if lambda_lpips > 0:
+        if lambda_lpips > 0 and (device.startswith("cuda") or torch.cuda.is_available()):
             try:
                 import lpips
                 self.lpips_fn = lpips.LPIPS(net="alex", verbose=False).eval()
@@ -128,12 +128,11 @@ class RestorationLoss(nn.Module):
         Returns:
             Tuple of (total_loss_tensor, loss_dict).
         """
+        # 1. Pixel L1 loss (unclamped to ensure gradient flow across full range)
+        l1_loss = self.l1(pred, target)
+
+        # 2. SSIM and LPIPS loss computed on clamped prediction
         pred_clipped = torch.clamp(pred, 0.0, 1.0)
-
-        # 1. Pixel L1 loss
-        l1_loss = self.l1(pred_clipped, target)
-
-        # 2. SSIM loss (1 - SSIM)
         ssim_val = self.ssim_fn(pred_clipped, target)
         ssim_loss = 1.0 - ssim_val
 
